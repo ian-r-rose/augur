@@ -1,4 +1,6 @@
 import readline from 'readline';
+import { Account } from "../constants";
+import { computeAddress } from "ethers/utils";
 
 export function waitForSigint(): Promise<void> {
   process.stdin.resume();
@@ -53,4 +55,23 @@ export function formatAddress(address: string, formatting: AddressFormatting): s
   }
 
   return address
+}
+
+export function accountFromPrivateKey(key: string): Account {
+  key = cleanKey(key);
+  return {
+    secretKey: key,
+    publicKey: computeAddress(key),
+    balance: 0, // not used here; only for ganache premining
+  }
+}
+
+export function cleanKey(key: string): string {
+  if (key.slice(0, 2) !== '0x') {
+    key = `0x${key}`;
+  }
+  if (key[key.length - 1] === '\n') {
+    key = key.slice(0, key.length - 1)
+  }
+  return key;
 }

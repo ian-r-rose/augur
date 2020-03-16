@@ -3,8 +3,7 @@ import Vorpal from 'vorpal';
 import program from 'commander';
 import { addScripts } from './scripts';
 import { addGanacheScripts } from './ganache-scripts';
-import { Account, ACCOUNTS } from '../constants';
-import { computeAddress } from 'ethers/utils';
+import { ACCOUNTS } from '../constants';
 import * as fs from 'fs';
 import {
   buildConfig,
@@ -13,6 +12,7 @@ import {
   mergeConfig,
   RecursivePartial
 } from '@augurproject/artifacts';
+import { accountFromPrivateKey } from './util';
 
 async function processAccounts(flash: FlashSession, args: any) {
     // Figure out which private key to use.
@@ -143,25 +143,6 @@ function makeVorpalCLI(flash: FlashSession): Vorpal {
   vorpal.delimiter('augur$');
 
   return vorpal;
-}
-
-function accountFromPrivateKey(key: string): Account {
-  key = cleanKey(key);
-  return {
-    secretKey: key,
-    publicKey: computeAddress(key),
-    balance: 0, // not used here; only for ganache premining
-  }
-}
-
-function cleanKey(key: string): string {
-  if (key.slice(0, 2) !== '0x') {
-    key = `0x${key}`;
-  }
-  if (key[key.length - 1] === '\n') {
-    key = key.slice(0, key.length - 1)
-  }
-  return key;
 }
 
 if (require.main === module) {

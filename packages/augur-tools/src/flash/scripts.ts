@@ -36,7 +36,7 @@ import { ContractAPI } from '../libs/contract-api';
 import { OrderBookShaper, OrderBookConfig } from './orderbook-shaper';
 import { NumOutcomes } from '@augurproject/sdk/src/state/logs/types';
 import { flattenZeroXOrders } from '@augurproject/sdk/build/state/getter/ZeroXOrdersGetters';
-import { formatAddress, sleep, waitForSigint } from "./util";
+import { accountFromPrivateKey, formatAddress, sleep, waitForSigint } from "./util";
 import { runWsServer, runWssServer } from '@augurproject/sdk/build/state/WebsocketEndpoint';
 import { createApp, runHttpServer, runHttpsServer } from '@augurproject/sdk/build/state/HTTPEndpoint';
 
@@ -1513,10 +1513,7 @@ export function addScripts(flash: FlashSession) {
   flash.addScript({
     name: 'whoami',
     async call(this: FlashSession) {
-      if (this.noProvider()) return;
-      const user = await this.ensureUser();
-
-      this.log(`You are ${user.account.publicKey}\n`);
+      this.log(`You are ${this.accounts[0].publicKey}\n`);
     },
   });
 
