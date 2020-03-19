@@ -1891,7 +1891,7 @@ export function addScripts(flash: FlashSession) {
     ],
     async call(this: FlashSession, args: FlashArguments) {
       if (this.noProvider()) return;
-      const user = await this.ensureUser(this.network, true);
+      const user = await this.ensureUser();
       let marketId = (args.marketId as string) || null;
 
       if (marketId === null) {

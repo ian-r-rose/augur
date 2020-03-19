@@ -4,16 +4,23 @@ import { ContractAPI } from '..';
 import { MarketInfo } from '@augurproject/sdk/build/state/getter/Markets';
 import { calculatePayoutNumeratorsArray } from '@augurproject/sdk';
 import { MarketTypeName } from '@augurproject/sdk/build/state/logs/types';
+import { ContractInterfaces } from '@augurproject/core/build';
 
 export async function fork(user: ContractAPI, market: MarketInfo): Promise<boolean> {
   const MAX_DISPUTES = 20;
   let SOME_REP = new BigNumber(1e18).times(10e2);
 
-  const payoutNumerators = getPayoutNumerators(market, 'invalid');
-  const conflictOutcome = market.marketType === MarketTypeName.Scalar ? makeValidScalarOutcome(market) : 1;
-  const conflictNumerators = getPayoutNumerators(market, conflictOutcome);
+  const payoutNumerators: BigNumber[] = String('0,100,0')
+    .split(',')
+    .map(i => new BigNumber(i));
 
-  const marketContract = user.augur.contracts.marketFromAddress(market.id);
+  const conflictNumerators: BigNumber[] = String('100,0,0')
+    .split(',')
+    .map(i => new BigNumber(i));
+
+  const marketContract: ContractInterfaces.Market = await user.getMarketContract(
+    market.id
+  );
 
   await user.repFaucet(SOME_REP);
 
