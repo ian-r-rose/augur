@@ -129,14 +129,12 @@ export class ContractDependenciesGSN extends ContractDependenciesEthers {
     // We bypass the Provider wrapper here and directly get the eth rpc api gas price since we do not want overrides.
     let reccomendedGasPrice = await this.provider.provider.getGasPrice();
     this.gasPrice = new BigNumber(reccomendedGasPrice.toString()).multipliedBy(GAS_PRICE_MULTIPLIER);
-    console.log(`Set gas price to: ${this.gasPrice.toFixed()}`);
 
     // Refresh Exchange Rate
     const reservesData = await this.ethExchange.getReserves();
     const cashReserves:BigNumber = new BigNumber((this.token0IsCash ? reservesData[0] : reservesData[1]).toString());
     const ethReserves: BigNumber = new BigNumber((this.token0IsCash ? reservesData[1] : reservesData[0]).toString());
     this.ethToDaiRate = cashReserves.div(ethReserves).multipliedBy(10**18).decimalPlaces(0);
-    console.log(`Set ETH to DAI rate to: ${this.ethToDaiRate.toFixed()}`);
     setTimeout(this.refreshGasPriceAndExchangeRate.bind(this), REFRESH_INTERVAL_MS);
   }
 
