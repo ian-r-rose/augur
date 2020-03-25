@@ -1,7 +1,7 @@
 import { WSClient } from '@0x/mesh-rpc-client';
 import { BrowserMesh, Connectors } from '@augurproject/sdk';
 import { MarketLiquidityRanking } from '@augurproject/sdk/build/state/getter/Liquidity';
-import { ACCOUNTS, defaultSeedPath, loadSeedFile } from '@augurproject/tools';
+import { ACCOUNTS, defaultSeedPath, loadSeed } from '@augurproject/tools';
 import { TestContractAPI } from '@augurproject/tools';
 import { stringTo32ByteHex } from '@augurproject/tools/build/libs/Utils';
 import { BigNumber } from 'bignumber.js';
@@ -26,7 +26,7 @@ describe('State API :: Liquidity', () => {
     meshClient = new WSClient(`ws://localhost:${port}`);
     meshBrowser = new MockBrowserMesh(meshClient);
 
-    const seed = await loadSeedFile(defaultSeedPath);
+    const seed = await loadSeed(defaultSeedPath);
     provider = await makeProvider(seed, ACCOUNTS);
     config = provider.getConfig();
   });

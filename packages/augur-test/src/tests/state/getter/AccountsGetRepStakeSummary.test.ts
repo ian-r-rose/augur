@@ -1,5 +1,5 @@
 import { SECONDS_IN_A_DAY } from '@augurproject/sdk';
-import { ACCOUNTS, defaultSeedPath, loadSeedFile } from '@augurproject/tools';
+import { ACCOUNTS, defaultSeedPath, loadSeed } from '@augurproject/tools';
 import { TestContractAPI } from '@augurproject/tools';
 import { BigNumber } from 'bignumber.js';
 import { makeProvider } from '../../../libs';
@@ -9,7 +9,7 @@ describe('State API :: Accounts :: ', () => {
   let mary: TestContractAPI;
 
   beforeAll(async () => {
-    const seed = await loadSeedFile(defaultSeedPath);
+    const seed = await loadSeed(defaultSeedPath);
     const provider = await makeProvider(seed, ACCOUNTS);
     const config = provider.getConfig();
 
@@ -57,7 +57,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountRepStakeSummary',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
       }
     );
     expect(accountRepStakeSummary.repWinnings).toEqual('0');
@@ -114,7 +114,7 @@ describe('State API :: Accounts :: ', () => {
 
     accountRepStakeSummary = await john.api.route('getAccountRepStakeSummary', {
       universe: john.augur.contracts.universe.address,
-      account: ACCOUNTS[0].publicKey,
+      account: ACCOUNTS[0].address,
     });
     expect(accountRepStakeSummary.repWinnings).toEqual('0');
     expect(accountRepStakeSummary.reporting.contracts.length).toEqual(1);
@@ -134,7 +134,7 @@ describe('State API :: Accounts :: ', () => {
 
     accountRepStakeSummary = await john.api.route('getAccountRepStakeSummary', {
       universe: john.augur.contracts.universe.address,
-      account: ACCOUNTS[1].publicKey,
+      account: ACCOUNTS[1].address,
     });
     expect(accountRepStakeSummary.repWinnings).toEqual('0');
     expect(accountRepStakeSummary.reporting.contracts.length).toEqual(0);
@@ -162,25 +162,25 @@ describe('State API :: Accounts :: ', () => {
     // Redeem participation tokens
     await john.redeemParticipationTokens(
       disputeWindow.address,
-      john.account.publicKey
+      john.account.address
     );
 
     // Claim initial reporter
     const initialReporter = await john.getInitialReporter(yesNoMarket1);
-    await initialReporter.redeem(john.account.publicKey);
+    await initialReporter.redeem(john.account.address);
 
     // Claim winning crowdsourcers
     const winningReportingParticipant = await john.getWinningReportingParticipant(
       yesNoMarket1
     );
-    await winningReportingParticipant.redeem(john.account.publicKey);
-    await winningReportingParticipant.redeem(mary.account.publicKey);
+    await winningReportingParticipant.redeem(john.account.address);
+    await winningReportingParticipant.redeem(mary.account.address);
 
     await john.sync();
 
     accountRepStakeSummary = await john.api.route('getAccountRepStakeSummary', {
       universe: john.augur.contracts.universe.address,
-      account: ACCOUNTS[0].publicKey,
+      account: ACCOUNTS[0].address,
     });
     expect(accountRepStakeSummary.repWinnings).toEqual('0');
     expect(accountRepStakeSummary.reporting.contracts.length).toEqual(0);
@@ -191,7 +191,7 @@ describe('State API :: Accounts :: ', () => {
 
     accountRepStakeSummary = await john.api.route('getAccountRepStakeSummary', {
       universe: john.augur.contracts.universe.address,
-      account: ACCOUNTS[1].publicKey,
+      account: ACCOUNTS[1].address,
     });
     expect(accountRepStakeSummary.repWinnings).toEqual('839233501409956566');
     expect(accountRepStakeSummary.reporting.contracts.length).toEqual(0);

@@ -2,7 +2,7 @@ import { SECONDS_IN_A_DAY } from '@augurproject/sdk';
 import {
   ACCOUNTS,
   defaultSeedPath,
-  loadSeedFile,
+  loadSeed,
   TestContractAPI,
 } from '@augurproject/tools';
 import { TestEthersProvider } from '@augurproject/tools/build/libs/TestEthersProvider';
@@ -27,7 +27,7 @@ export interface SomeState {
 }
 
 export async function _beforeAll(): Promise<AllState> {
-  const seed = await loadSeedFile(defaultSeedPath);
+  const seed = await loadSeed(defaultSeedPath);
   const baseProvider = await makeProvider(seed, ACCOUNTS);
   const config = baseProvider.getConfig();
 
@@ -54,7 +54,7 @@ export async function _beforeAll(): Promise<AllState> {
   const lowFeePerCashInAttoCash = new BigNumber(10).pow(18).div(20); // 5% creator fee
   const highFeePerCashInAttoCash = new BigNumber(10).pow(18).div(10); // 10% creator fee
   const affiliateFeeDivisor = new BigNumber(0);
-  const designatedReporter = john.account.publicKey;
+  const designatedReporter = john.account.address;
   const markets = {};
   markets['yesNoMarket1'] = (await john.createYesNoMarket({
     endTime,

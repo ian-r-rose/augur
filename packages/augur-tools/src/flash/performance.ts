@@ -29,9 +29,9 @@ export async function setupUsers(accounts: Account[], ethSource: ContractAPI, fu
 }
 
 export async function setupUser(account: Account, ethSource: ContractAPI, funding: BigNumber, baseConfig: SDKConfiguration): Promise<ContractAPI> {
-  console.log(`Setting up account ${account.publicKey}`);
+  console.log(`Setting up account ${account.address}`);
   const { config, zeroX } = setupPerfConfigAndZeroX(baseConfig);
-  await ethSource.augur.sendETH(account.publicKey, funding);
+  await ethSource.augur.sendETH(account.address, funding);
   const user = await ContractAPI.userWrapper(account, ethSource.provider, config, undefined, zeroX);
   await waitForFunding(user)
 
@@ -52,7 +52,7 @@ export async function setupUser(account: Account, ethSource: ContractAPI, fundin
 export function setupPerfConfigAndZeroX(config: SDKConfiguration) {
   config = validConfigOrDie(mergeConfig(config, {
     zeroX: { rpc: { enabled: true }, mesh: { enabled: false }},
-    gsn: { enabled: false },
+    flash: { useGSN: false }
   }));
   const zeroX = new WSClient(config.zeroX.rpc.ws);
   return { config, zeroX };
@@ -64,16 +64,16 @@ export async function setupMarkets(makers: ContractAPI[], serial=false): Promise
 
 export function setupMarketSet(maker: ContractAPI): Array<ReadiedPromise<Market>> {
   return [
-    () => maker.createReasonableYesNoMarket(`yes/no #1 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableYesNoMarket(`yes/no #2 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableYesNoMarket(`yes/no #3 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableYesNoMarket(`yes/no #4 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableScalarMarket(`scalar #1 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableScalarMarket(`scalar #2 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableScalarMarket(`scalar #3 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableScalarMarket(`scalar #4 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableMarket(['foo', 'bar', 'zeitgeist', 'mary', 'bob'].map(formatBytes32String), `cat #1 from ${maker.account.publicKey}`, false),
-    () => maker.createReasonableMarket(['torrent', 'rainstorm', 'shower', 'puddle-maker'].map(formatBytes32String), `cat #2 from ${maker.account.publicKey}`, false),
+    () => maker.createReasonableYesNoMarket(`yes/no #1 from ${maker.account.address}`, false),
+    () => maker.createReasonableYesNoMarket(`yes/no #2 from ${maker.account.address}`, false),
+    () => maker.createReasonableYesNoMarket(`yes/no #3 from ${maker.account.address}`, false),
+    () => maker.createReasonableYesNoMarket(`yes/no #4 from ${maker.account.address}`, false),
+    () => maker.createReasonableScalarMarket(`scalar #1 from ${maker.account.address}`, false),
+    () => maker.createReasonableScalarMarket(`scalar #2 from ${maker.account.address}`, false),
+    () => maker.createReasonableScalarMarket(`scalar #3 from ${maker.account.address}`, false),
+    () => maker.createReasonableScalarMarket(`scalar #4 from ${maker.account.address}`, false),
+    () => maker.createReasonableMarket(['foo', 'bar', 'zeitgeist', 'mary', 'bob'].map(formatBytes32String), `cat #1 from ${maker.account.address}`, false),
+    () => maker.createReasonableMarket(['torrent', 'rainstorm', 'shower', 'puddle-maker'].map(formatBytes32String), `cat #2 from ${maker.account.address}`, false),
   ]
 }
 
@@ -141,7 +141,7 @@ export async function takeOrder(
     }
     const result = await trader.augur.placeTrade(params);
     if (result) {
-      console.log(`Took order ${order.orderId} of market ${market.id} for ${trader.account.publicKey}`);
+      console.log(`Took order ${order.orderId} of market ${market.id} for ${trader.account.address}`);
     } else {
       console.log('Took no orders with these params:', params);
     }
@@ -176,7 +176,7 @@ export async function getAllMarkets(user: ContractAPI, makerAccounts: Account[])
     universe: user.augur.contracts.universe.address,
     limit: 1e7 // very large number
   })).markets;
-  const makerAddresses = makerAccounts.map((account) => account.publicKey.toLowerCase());
+  const makerAddresses = makerAccounts.map((account) => account.address.toLowerCase());
   return marketInfos.filter((market) => makerAddresses.indexOf(market.author.toLowerCase()) !== -1);
 }
 

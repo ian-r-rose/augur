@@ -3,7 +3,7 @@ import {
   ACCOUNTS,
   defaultSeedPath,
   fork,
-  loadSeedFile,
+  loadSeed,
 } from '@augurproject/tools';
 import { TestContractAPI } from '@augurproject/tools';
 import {
@@ -27,7 +27,7 @@ describe('State API :: Universe :: ', () => {
   let config: SDKConfiguration;
 
   beforeAll(async () => {
-    const seed = await loadSeedFile(defaultSeedPath);
+    const seed = await loadSeed(defaultSeedPath);
     baseProvider = await makeProvider(seed, ACCOUNTS);
     config = baseProvider.getConfig();
 
@@ -244,7 +244,7 @@ describe('State API :: Universe :: ', () => {
     const genesisUniverse = john.augur.contracts.universe;
 
     const legacyRep = new BigNumber(11000000).multipliedBy(10 ** 18);
-    let johnRep = await john.augur.contracts.reputationToken.balanceOf_(john.account.publicKey);
+    let johnRep = await john.augur.contracts.reputationToken.balanceOf_(john.account.address);
     let maryRep = new BigNumber(0);
     const bobRep = new BigNumber(0);
     let totalRep = await john.augur.contracts.reputationToken.totalSupply_();
@@ -263,7 +263,7 @@ describe('State API :: Universe :: ', () => {
       'getUniverseChildren',
       {
         universe: genesisUniverse.address,
-        account: john.account.publicKey,
+        account: john.account.address,
       }
     );
 
@@ -286,7 +286,7 @@ describe('State API :: Universe :: ', () => {
     await john.sync();
     universeChildren = await john.api.route('getUniverseChildren', {
       universe: genesisUniverse.address,
-      account: bob.account.publicKey,
+      account: bob.account.address,
     });
 
     expect(universeChildren).toMatchObject({
@@ -313,7 +313,7 @@ describe('State API :: Universe :: ', () => {
 
     universeChildren = await john.api.route('getUniverseChildren', {
       universe: genesisUniverse.address,
-      account: john.account.publicKey,
+      account: john.account.address,
     });
     expect(universeChildren).toMatchObject({
       id: genesisUniverse.address,
@@ -340,7 +340,7 @@ describe('State API :: Universe :: ', () => {
       john.augur.config.networkId
     );
     // The fork script faucets a lot of REP then uses up a difficult-to-predict amount.
-    johnRep = await repToken.balanceOf_(john.account.publicKey);
+    johnRep = await repToken.balanceOf_(john.account.address);
     totalRep = await repToken.totalSupply_();
 
     const invalidNumerators = getPayoutNumerators(marketInfo, 'invalid');
@@ -358,7 +358,7 @@ describe('State API :: Universe :: ', () => {
     await john.sync();
     universeChildren = await john.api.route('getUniverseChildren', {
       universe: genesisUniverse.address,
-      account: john.account.publicKey,
+      account: john.account.address,
     });
 
     expect(universeChildren).toMatchObject({

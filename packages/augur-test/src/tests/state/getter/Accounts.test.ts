@@ -1,6 +1,6 @@
 import { SECONDS_IN_A_DAY } from '@augurproject/sdk';
 import { Action, Coin } from '@augurproject/sdk/build/state/getter/Accounts';
-import { ACCOUNTS, defaultSeedPath, loadSeedFile } from '@augurproject/tools';
+import { ACCOUNTS, defaultSeedPath, loadSeed } from '@augurproject/tools';
 import { TestContractAPI } from '@augurproject/tools';
 import { stringTo32ByteHex } from '@augurproject/tools/build/libs/Utils';
 import { BigNumber } from 'bignumber.js';
@@ -13,7 +13,7 @@ describe('State API :: Accounts :: ', () => {
   let config: SDKConfiguration;
 
   beforeAll(async () => {
-    const seed = await loadSeedFile(defaultSeedPath);
+    const seed = await loadSeed(defaultSeedPath);
     const provider = await makeProvider(seed, ACCOUNTS);
     config = provider.getConfig();
 
@@ -48,7 +48,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address.toLowerCase(), // Test that lower-case addresses can be passed in
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.ALL,
       }
     );
@@ -251,7 +251,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[1].publicKey,
+        account: ACCOUNTS[1].address,
         action: Action.FILLED,
       }
     );
@@ -381,7 +381,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.INITIAL_REPORT,
       }
     );
@@ -461,7 +461,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.DISPUTE,
       }
     );
@@ -508,23 +508,23 @@ describe('State API :: Accounts :: ', () => {
     // Redeem participation tokens
     await john.redeemParticipationTokens(
       curDisputeWindow.address,
-      john.account.publicKey
+      john.account.address
     );
 
     // Claim initial reporter
     const initialReporter = await john.getInitialReporter(johnYesNoMarket);
-    await initialReporter.redeem(john.account.publicKey);
+    await initialReporter.redeem(john.account.address);
 
     // Claim winning crowdsourcers
     const winningReportingParticipant = await john.getWinningReportingParticipant(
       johnYesNoMarket
     );
-    await winningReportingParticipant.redeem(john.account.publicKey);
+    await winningReportingParticipant.redeem(john.account.address);
 
     // Claim trading proceeds
     await john.augur.contracts.shareToken.claimTradingProceeds(
       johnYesNoMarket.address,
-      john.account.publicKey,
+      john.account.address,
       stringTo32ByteHex('')
     );
 
@@ -534,7 +534,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.CLAIM_PARTICIPATION_TOKENS,
       }
     );
@@ -557,7 +557,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.CLAIM_WINNING_CROWDSOURCERS,
       }
     );
@@ -592,7 +592,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.CLAIM_TRADING_PROCEEDS,
       }
     );
@@ -628,7 +628,7 @@ describe('State API :: Accounts :: ', () => {
       'getAccountTransactionHistory',
       {
         universe: john.augur.contracts.universe.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
         action: Action.ALL,
         coin: Coin.ALL,
         earliestTransactionTime: new BigNumber(
@@ -684,7 +684,7 @@ describe('State API :: Accounts :: ', () => {
       'getUserCurrentDisputeStake',
       {
         marketId: johnYesNoMarket.address,
-        account: ACCOUNTS[0].publicKey,
+        account: ACCOUNTS[0].address,
       }
     );
 

@@ -13,6 +13,7 @@ const outcome0 = new BigNumber(0);
 const outcome1 = new BigNumber(1);
 
 export async function generateWarpSyncTestData(config: SDKConfiguration, seed: Seed) {
+  const { addresses, contractsHash } = seed;
   const metadata = {};
 
   const [db, provider] = await makeProviderWithDB(seed, ACCOUNTS);
@@ -112,7 +113,7 @@ export async function generateWarpSyncTestData(config: SDKConfiguration, seed: S
     outcome1
   );
 
-  await john.augur.warpSync.initializeUniverse(seed.addresses.Universe);
+  await john.augur.warpSync.initializeUniverse(addresses.Universe);
 
   // Move timestamp ahead 12 hours.
   await provider.provider.send('evm_increaseTime', [SECONDS_IN_A_DAY.toNumber() / 2]);
@@ -168,5 +169,7 @@ export async function generateWarpSyncTestData(config: SDKConfiguration, seed: S
   return {
     data: await extractSeed(db),
     metadata,
+    contractsHash,
+    addresses,
   };
 }

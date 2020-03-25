@@ -4,7 +4,7 @@ import {
   ContractAPI,
   defaultSeedPath,
   fork,
-  loadSeedFile,
+  loadSeed,
 } from '@augurproject/tools';
 import { TestContractAPI } from '@augurproject/tools';
 import { stringTo32ByteHex } from '@augurproject/tools/build/libs/Utils';
@@ -16,7 +16,7 @@ describe('State API :: get-platform-activity-stats :: ', () => {
   let mary: TestContractAPI;
 
   beforeAll(async () => {
-    const seed = await loadSeedFile(defaultSeedPath);
+    const seed = await loadSeed(defaultSeedPath);
     const provider = await makeProvider(seed, ACCOUNTS);
     const config = provider.getConfig();
 

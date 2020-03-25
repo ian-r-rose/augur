@@ -1,4 +1,4 @@
-import { ACCOUNTS, defaultSeedPath, loadSeedFile } from '@augurproject/tools';
+import { ACCOUNTS, defaultSeedPath, loadSeed } from '@augurproject/tools';
 import { TestContractAPI } from '@augurproject/tools';
 import { BigNumber } from 'bignumber.js';
 import { makeProvider } from '../../libs';
@@ -9,7 +9,7 @@ let mary: TestContractAPI;
 let config: SDKConfiguration;
 
 beforeAll(async () => {
-  const seed = await loadSeedFile(defaultSeedPath);
+  const seed = await loadSeed(defaultSeedPath);
   const provider = await makeProvider(seed, ACCOUNTS);
   config = provider.getConfig();
 

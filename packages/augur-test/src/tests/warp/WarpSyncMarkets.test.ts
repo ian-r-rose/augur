@@ -1,6 +1,6 @@
 import { Market } from '@augurproject/core/build/libraries/ContractInterfaces';
 import { databasesToSync } from '@augurproject/sdk/build/warp/WarpController';
-import { ACCOUNTS, defaultSeedPath, loadSeedFile } from '@augurproject/tools';
+import { ACCOUNTS, defaultSeedPath, loadSeed } from '@augurproject/tools';
 import { TestEthersProvider } from '@augurproject/tools/build/libs/TestEthersProvider';
 import { BigNumber } from 'bignumber.js';
 import { makeProvider } from '../../libs';
@@ -22,7 +22,7 @@ describe('Warp Sync markets', () => {
   });
 
   beforeEach(async () => {
-    const seed = await loadSeedFile(defaultSeedPath);
+    const seed = await loadSeed(defaultSeedPath);
     provider = await makeProvider(seed, ACCOUNTS);
     const config = provider.getConfig();
 
@@ -100,15 +100,15 @@ describe('Warp Sync markets', () => {
 
       await provider.provider.send('evm_increaseTime', [sizeOfStep]);
 
-      await john.transferCash(mary.account.publicKey, amountToTransfer);
-      await john.transferCash(mary.account.publicKey, amountToTransfer);
+      await john.transferCash(mary.account.address, amountToTransfer);
+      await john.transferCash(mary.account.address, amountToTransfer);
 
       const end = await provider.getBlock('latest');
 
       await provider.provider.send('evm_increaseTime', [sizeOfStep]);
 
-      await john.transferCash(mary.account.publicKey, amountToTransfer);
-      await john.transferCash(mary.account.publicKey, amountToTransfer);
+      await john.transferCash(mary.account.address, amountToTransfer);
+      await john.transferCash(mary.account.address, amountToTransfer);
 
       await expect(john.db.warpCheckpoints.table.toArray()).resolves.toEqual([
         {

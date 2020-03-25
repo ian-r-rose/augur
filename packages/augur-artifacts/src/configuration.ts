@@ -68,6 +68,11 @@ export interface SDKConfiguration {
   plugins?: {
     chat?: '3box'|'orbit',
     comments?: '3box'|'facebook',
+  },
+  flash?: {
+    useGSN?: boolean,
+    syncSDK?: boolean,
+    skipApproval?: boolean,
   }
 };
 
@@ -270,6 +275,10 @@ export function serializeConfig(config: RecursivePartial<SDKConfiguration>): str
   // contractInputPath is ephemeral
   if (config.deploy?.contractInputPath) {
     delete finalConfig.deploy.contractInputPath;
+  }
+  // flash isn't saved
+  if (config.flash) {
+    delete finalConfig.flash;
   }
   return JSON.stringify(finalConfig, null, 2);
 }
