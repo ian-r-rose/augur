@@ -502,6 +502,11 @@ export class ContractAPI {
     return this.augur.contracts.universeFromAddress(universeAddress);
   }
 
+  async advanceTimestamp(secondsToAdvance: BigNumber): Promise<void> {
+    const currentTimestamp = await this.getTimestamp();
+    return this.setTimestamp(currentTimestamp.plus(secondsToAdvance))
+  }
+
   async setTimestamp(timestamp: BigNumber): Promise<void> {
     await this.provider.providerSend('evm_mine', [timestamp.toNumber()]);
     const time = this.augur.contracts.getTime();

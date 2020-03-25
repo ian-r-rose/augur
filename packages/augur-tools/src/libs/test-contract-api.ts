@@ -10,6 +10,7 @@ import {
   ZeroX,
 } from '@augurproject/sdk';
 import { SubscriptionEventName } from '@augurproject/sdk/build';
+import { Controller } from '@augurproject/sdk/build/state/Controller';
 import { DB } from '@augurproject/sdk/build/state/db/DB';
 import { BlockAndLogStreamerSyncStrategy } from '@augurproject/sdk/build/state/sync/BlockAndLogStreamerSyncStrategy';
 import { BulkSyncStrategy } from '@augurproject/sdk/build/state/sync/BulkSyncStrategy';
@@ -81,6 +82,8 @@ export class TestContractAPI extends ContractAPI {
     this.api = new API(augur, Promise.resolve(db));
 
     const contractAddresses = augur.contractEvents.getAugurContractAddresses();
+
+    new Controller(augur, Promise.resolve(db), db.logFilters);
 
     this.bulkSyncStrategy = new BulkSyncStrategy(
       provider.getLogs,
