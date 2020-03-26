@@ -508,7 +508,6 @@ export class ContractAPI {
   }
 
   async setTimestamp(timestamp: BigNumber): Promise<void> {
-    await this.provider.providerSend('evm_mine', [timestamp.toNumber()]);
     const time = this.augur.contracts.getTime();
 
     if (this.augur.contracts.isTimeControlled(time)) {

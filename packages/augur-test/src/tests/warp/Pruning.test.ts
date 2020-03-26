@@ -51,7 +51,7 @@ describe('market pruning', () => {
     });
 
     // advance 30 days.
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 31; i++) {
       await john.advanceTimestamp(SECONDS_IN_A_DAY);
       await john.sync();
     }
