@@ -7,7 +7,6 @@ import {
   SubscriptionEventName,
 } from '@augurproject/sdk';
 import { DB } from '@augurproject/sdk/build/state/db/DB';
-import { API } from '@augurproject/sdk/build/state/getter/API';
 import { configureDexieForNode } from '@augurproject/sdk/build/state/utils/DexieIDBShim';
 import { Account } from '../constants';
 import { makeSigner, ContractAPI, providerFromConfig, Seed } from '..';
@@ -37,8 +36,6 @@ export interface FlashScript {
 
 export class FlashSession {
   // Configuration
-  api?: API;
-  db?: Promise<DB>;
   readonly scripts: { [name: string]: FlashScript } = {};
 
   // Node miscellanea
@@ -142,7 +139,6 @@ export class FlashSession {
 
     if (config.flash?.syncSDK) {
       await user.augur.connector.connect(this.config);
-      this.api = (user.augur.connector as Connectors.SingleThreadConnector).api;
       // NB(pg): Augur#on should *not* be asynchronous and needs to be refactored
       // at another time.
       await user.augur.on(
