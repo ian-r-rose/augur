@@ -1661,7 +1661,7 @@ export function addScripts(flash: FlashSession) {
     name: 'sdk-server',
     ignoreNetwork: true,
     async call(this: FlashSession) {
-      const api = await startServer(this.config, this.account.address);
+      const api = await startServer(this.config, this.getAccount().address);
       const app = createApp(api);
 
       const httpServer = this.config.server?.startHTTP && runHttpServer(app, this.config);
@@ -1798,7 +1798,7 @@ export function addScripts(flash: FlashSession) {
     async call(this: FlashSession, args: FlashArguments) {
       const target = args.target as string;
       const user = await this.createUser(this.getAccount(), this.config);
-      const balance = await user.getEthBalance(target || this.account.address);
+      const balance = await user.getEthBalance(target || this.getAccount().address);
       console.log(balance.toFixed());
     },
   });
@@ -1815,7 +1815,7 @@ export function addScripts(flash: FlashSession) {
     async call(this: FlashSession, args: FlashArguments) {
       const target = args.target as string;
       const user = await this.createUser(this.getAccount(), this.config);
-      const balance = await user.getCashBalance(target || this.account.address);
+      const balance = await user.getCashBalance(target || this.getAccount().address);
       console.log(balance.toFixed());
     },
   });
@@ -1832,7 +1832,7 @@ export function addScripts(flash: FlashSession) {
     async call(this: FlashSession, args: FlashArguments) {
       const target = args.target as string;
       const user = await this.createUser(this.getAccount(), this.config);
-      const balance = await user.getRepBalance(target || this.account.address);
+      const balance = await user.getRepBalance(target || this.getAccount().address);
       console.log(balance.toFixed());
     },
   });

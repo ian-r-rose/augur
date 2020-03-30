@@ -6,7 +6,6 @@ import {
   Events,
   SubscriptionEventName,
 } from '@augurproject/sdk';
-import { DB } from '@augurproject/sdk/build/state/db/DB';
 import { configureDexieForNode } from '@augurproject/sdk/build/state/utils/DexieIDBShim';
 import { Account } from '../constants';
 import { makeSigner, ContractAPI, providerFromConfig, Seed } from '..';
@@ -40,7 +39,6 @@ export class FlashSession {
 
   // Node miscellanea
   provider?: EthersProvider;
-  account?: Account;
 
   constructor(
     public accounts: Account[],
@@ -159,7 +157,7 @@ export class FlashSession {
   };
 
   getAccount(): Account {
-    return this.account || this.accounts[0];
+    return this.accounts[0];
   }
 
   async contractOwner(): Promise<ContractAPI> {

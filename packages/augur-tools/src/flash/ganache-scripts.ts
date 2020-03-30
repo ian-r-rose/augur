@@ -99,7 +99,7 @@ export function addGanacheScripts(flash: FlashSession) {
       const logs = JSON.parse(await fs.readFile(logsFilePath));
 
       // Build a local environment to replay to.
-      const {provider, db } = await startGanacheServer(this.accounts);
+      const { provider, db } = await startGanacheServer(this.accounts);
       const config = this.deriveConfig({ deploy: { normalTime: false, writeArtifacts: false }});
       await deployContracts(this.network, provider, this.getAccount(), compilerOutput, config);
 
