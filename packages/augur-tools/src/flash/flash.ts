@@ -8,7 +8,6 @@ import {
 } from '@augurproject/sdk';
 import { DB } from '@augurproject/sdk/build/state/db/DB';
 import { API } from '@augurproject/sdk/build/state/getter/API';
-import { LogFilterAggregatorInterface } from '@augurproject/sdk/build/state/logs/LogFilterAggregator';
 import { configureDexieForNode } from '@augurproject/sdk/build/state/utils/DexieIDBShim';
 import { Account } from '../constants';
 import { makeSigner, ContractAPI, providerFromConfig, Seed } from '..';
@@ -38,7 +37,6 @@ export interface FlashScript {
 
 export class FlashSession {
   // Configuration
-  user?: ContractAPI;
   api?: API;
   db?: Promise<DB>;
   readonly scripts: { [name: string]: FlashScript } = {};
@@ -143,11 +141,11 @@ export class FlashSession {
     }
 
     if (config.flash?.syncSDK) {
-      await this.user.augur.connector.connect(this.config);
-      this.api = (this.user.augur.connector as Connectors.SingleThreadConnector).api;
+      await user.augur.connector.connect(this.config);
+      this.api = (user.augur.connector as Connectors.SingleThreadConnector).api;
       // NB(pg): Augur#on should *not* be asynchronous and needs to be refactored
       // at another time.
-      await this.user.augur.on(
+      await user.augur.on(
         SubscriptionEventName.NewBlock,
         this.sdkNewBlock
       );
@@ -168,12 +166,6 @@ export class FlashSession {
     return this.account || this.accounts[0];
   }
 
-  private _findAccount(address: string): Account|undefined {
-    return this.accounts.find(
-      a => a.address.toLowerCase() === address.toLowerCase()
-    );
-  }
-
   async contractOwner(): Promise<ContractAPI> {
     if (typeof this.config?.addresses === 'undefined') {
       throw Error('ERROR: Must load contract addresses first.');
@@ -192,21 +184,6 @@ export class FlashSession {
 
   async getNetworkId(provider: EthersProvider): Promise<string> {
     return (await provider.getNetwork()).chainId.toString();
-  }
-
-  async makeDB() {
-    const logFilterAggregator = ({
-      getEventTopics: () => {},
-    parseLogs: () => {},
-    getEventContractAddress: () => {},
-    } as unknown) as LogFilterAggregatorInterface;
-
-    return DB.createAndInitializeDB(
-      Number(this.user.augur.config.networkId),
-      logFilterAggregator,
-      this.user.augur,
-      true
-    );
   }
 
   seeds: {[name: string]: Seed} = {};

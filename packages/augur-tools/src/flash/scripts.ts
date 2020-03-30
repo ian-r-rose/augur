@@ -64,7 +64,6 @@ import {
   createScalarZeroXOrders,
   createYesNoZeroXOrders
 } from './create-orders';
-// >>>>>>> flash improvements WIP
 
 export function addScripts(flash: FlashSession) {
   flash.addScript({
@@ -314,18 +313,19 @@ export function addScripts(flash: FlashSession) {
       const cat = Boolean(args.categorical);
       const scalar = Boolean(args.scalar);
       const title = args.title as string || null;
+      const user = await this.createUser(this.getAccount(), this.config);
 
       if (yesno || !(cat || scalar)) {
-        const market = await this.user.createReasonableYesNoMarket(title);
+        const market = await user.createReasonableYesNoMarket(title);
         console.log(`Created YesNo market "${market.address}".`);
       }
       if (cat) {
         const outcomes = ['first', 'second', 'third', 'fourth', 'fifth']
-        const market = await this.user.createReasonableMarket(outcomes, title);
+        const market = await user.createReasonableMarket(outcomes, title);
         console.log(`Created Categorical market "${market.address}".`);
       }
       if (scalar) {
-        const market = await this.user.createReasonableScalarMarket(title);
+        const market = await user.createReasonableScalarMarket(title);
         console.log(`Created Scalar market "${market.address}".`);
       }
     }
@@ -343,9 +343,8 @@ export function addScripts(flash: FlashSession) {
     async call(this: FlashSession, args: FlashArguments) {
       const title = args.title as string || null;
       if (this.noProvider()) return;
-      this.user = await this.createUser(this.getAccount(), this.config);
-
-      const market = await this.user.createReasonableYesNoMarket(title);
+      const user = await this.createUser(this.getAccount(), this.config);
+      const market = await user.createReasonableYesNoMarket(title);
       console.log(`Created YesNo market "${market.address}".`);
     },
   });
@@ -367,12 +366,12 @@ export function addScripts(flash: FlashSession) {
     ],
     async call(this: FlashSession, args: FlashArguments) {
       if (this.noProvider()) return;
-      this.user = await this.createUser(this.getAccount(), this.config);
+      const user = await this.createUser(this.getAccount(), this.config);
       const outcomes: string[] = (args.outcomes as string)
         .split(',')
         .map(formatBytes32String);
       const title = args.title as string || null;
-      const market = await this.user.createReasonableMarket(outcomes, title);
+      const market = await user.createReasonableMarket(outcomes, title);
       console.log(`Created Categorical market "${market.address}".`);
     },
   });
@@ -388,9 +387,9 @@ export function addScripts(flash: FlashSession) {
     ],
     async call(this: FlashSession, args: FlashArguments) {
       if (this.noProvider()) return;
-      this.user = await this.createUser(this.getAccount(), this.config);
+      const user = await this.createUser(this.getAccount(), this.config);
       const title = args.title as string || null;
-      const market = await this.user.createReasonableScalarMarket(title);
+      const market = await user.createReasonableScalarMarket(title);
       console.log(`Created Scalar market "${market.address}".`);
     },
   });
@@ -398,44 +397,44 @@ export function addScripts(flash: FlashSession) {
   flash.addScript({
     name: 'create-canned-markets',
     async call(this: FlashSession) {
-      this.user = await this.createUser(this.getAccount(), this.config);
-      await this.user.repFaucet(QUINTILLION.multipliedBy(1000000));
-      await this.user.faucetUpTo(QUINTILLION.multipliedBy(1000000));
-      await this.user.approve(QUINTILLION.multipliedBy(3000000));
+      const user = await this.createUser(this.getAccount(), this.config);
+      await user.repFaucet(QUINTILLION.multipliedBy(1000000));
+      await user.faucetUpTo(QUINTILLION.multipliedBy(1000000));
+      await user.approve(QUINTILLION.multipliedBy(3000000));
 
-      await this.user.initWarpSync(this.user.augur.contracts.universe.address);
-      await this.user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
-      await createCannedMarkets(this.user, false);
+      await user.initWarpSync(user.augur.contracts.universe.address);
+      await user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
+      await createCannedMarkets(user, false);
     },
   });
 
   flash.addScript({
     name: 'create-canned-markets-with-orders',
     async call(this: FlashSession) {
-      this.user = await this.createUser(this.getAccount(), this.config);
-      await this.user.repFaucet(QUINTILLION.multipliedBy(1000000));
-      await this.user.faucetUpTo(QUINTILLION.multipliedBy(1000000));
-      await this.user.approve(QUINTILLION.multipliedBy(3000000));
+      const user = await this.createUser(this.getAccount(), this.config);
+      await user.repFaucet(QUINTILLION.multipliedBy(1000000));
+      await user.faucetUpTo(QUINTILLION.multipliedBy(1000000));
+      await user.approve(QUINTILLION.multipliedBy(3000000));
 
-      await this.user.initWarpSync(this.user.augur.contracts.universe.address);
-      await this.user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
-      const markets = await createCannedMarkets(this.user, false);
+      await user.initWarpSync(user.augur.contracts.universe.address);
+      await user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
+      const markets = await createCannedMarkets(user, false);
       for (let i = 0; i < markets.length; i++) {
         const createdMarket = markets[i];
         const numTicks = await createdMarket.market.getNumTicks_();
         const numOutcomes = await createdMarket.market.getNumberOfOutcomes_();
         const marketId = createdMarket.market.address;
         if (numOutcomes.gt(new BigNumber(3))) {
-          await createCatZeroXOrders(this.user, marketId, true, numOutcomes.toNumber());
+          await createCatZeroXOrders(user, marketId, true, numOutcomes.toNumber());
         } else {
           if (numTicks.eq(new BigNumber(100))) {
-            await createYesNoZeroXOrders(this.user, marketId, true);
+            await createYesNoZeroXOrders(user, marketId, true);
           } else {
             try {
               const minPrice = new BigNumber(createdMarket.canned.minPrice);
               const maxPrice = new BigNumber(createdMarket.canned.maxPrice);
 
-              await createScalarZeroXOrders(this.user, marketId, true, false, numTicks, minPrice, maxPrice);
+              await createScalarZeroXOrders(user, marketId, true, false, numTicks, minPrice, maxPrice);
             } catch (e) {
               console.warn('could not create orders for scalar market', e)
             }
@@ -978,7 +977,8 @@ export function addScripts(flash: FlashSession) {
       await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config, serial)
 
       if (createMarkets) {
-        await createCannedMarkets(this.user);
+        const user = await this.createUser(this.getAccount(), this.config);
+        await createCannedMarkets(user);
       }
     },
   });
@@ -1005,12 +1005,12 @@ export function addScripts(flash: FlashSession) {
       if (this.noProvider()) return;
       const serial = !Boolean(args.parallel);
       const createMarkets = Boolean(args.createMarkets);
-
       const config = this.deriveConfig({ deploy: { normalTime: true }});
-      await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config, serial)
 
+      await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config, serial)
       if (createMarkets) {
-        await createCannedMarkets(this.user);
+        const user = await this.createUser(this.getAccount(), config);
+        await createCannedMarkets(user);
       }
     },
   });
@@ -1614,7 +1614,8 @@ export function addScripts(flash: FlashSession) {
         if (dev) {
           console.log('Deploying contracts');
           await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, this.config, serial);
-          await createCannedMarkets(this.user);
+          const user = await this.createUser(this.getAccount(), this.config);
+          await createCannedMarkets(user);
         }
 
         console.log('Building');
@@ -1879,7 +1880,7 @@ export function addScripts(flash: FlashSession) {
 
       const user = await this.createUser(this.getAccount(), this.config);
       await waitForSync(user);
-      const marketInfo = (await this.user.getMarketInfo(marketAddress))[0];
+      const marketInfo = (await user.getMarketInfo(marketAddress))[0];
 
       console.log('Waiting for 0x orders to arrive');
       await sleep(waitTimeForZeroX);
@@ -1973,7 +1974,7 @@ export function addScripts(flash: FlashSession) {
       await waitForSync(ethSource);
       const markets = (await getAllMarkets(ethSource, makerAccounts)).map((market) => market.id);
       const shapers = setupOrderBookShapers(markets, 10, expiration);
-      const orders = await setupOrders(this.user, shapers);
+      const orders = await setupOrders(ethSource, shapers);
 
       await createOrders(traders, orders, zeroxBatchSize);
       console.log(`Created ${orders.length} orders`);
