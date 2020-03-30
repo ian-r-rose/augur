@@ -29,7 +29,7 @@ describe('Checkpoint', () => {
       config,
     );
 
-    await john.faucet(new BigNumber(1000000000));
+    await john.faucetCash(new BigNumber(1000000000));
     await john.approveCentralAuthority();
 
     const amountToTransfer = new BigNumber(1000);

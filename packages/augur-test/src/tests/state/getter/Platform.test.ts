@@ -52,8 +52,8 @@ describe('State API :: get-platform-activity-stats :: ', () => {
     const price = new BigNumber(22);
     const cost = numShares.times(78).div(10);
 
-    await john.faucet(new BigNumber(1e18));
-    await mary.faucet(new BigNumber(1e18));
+    await john.faucetCash(new BigNumber(1e18));
+    await mary.faucetCash(new BigNumber(1e18));
     mary.repFaucet(new BigNumber(1e18).multipliedBy(1000000));
     john.repFaucet(new BigNumber(1e18).multipliedBy(1000000));
 

@@ -136,7 +136,7 @@ describe('State API :: Users :: ', () => {
     await john.sync();
 
     // Fill orders
-    await mary.faucet(new BigNumber(1e18)); // faucet enough cash for the various fill orders
+    await mary.faucetCash(new BigNumber(1e18)); // faucet enough cash for the various fill orders
     await mary.fillOrder(
       await john.getBestOrderId(bid, johnYesNoMarket.address, outcome0),
       numShares.div(10).times(2),

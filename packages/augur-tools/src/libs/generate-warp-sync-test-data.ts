@@ -31,8 +31,8 @@ export async function generateWarpSyncTestData(config: SDKConfiguration, seed: S
     config
   );
 
-  await john.faucet(new BigNumber(1e18)); // faucet enough cash for the various fill orders
-  await mary.faucet(new BigNumber(1e18)); // faucet enough cash for the various fill orders
+  await john.faucetCash(new BigNumber(1e18)); // faucet enough cash for the various fill orders
+  await mary.faucetCash(new BigNumber(1e18)); // faucet enough cash for the various fill orders
 
   await john.approveCentralAuthority();
   await mary.approveCentralAuthority();

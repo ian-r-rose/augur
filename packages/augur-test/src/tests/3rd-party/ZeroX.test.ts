@@ -93,7 +93,7 @@ describe('3rd Party :: ZeroX :: ', () => {
       await john.sync();
 
       // Give John enough cash to pay for the 0x order.
-      await john.faucet(new BigNumber(1e22));
+      await john.faucetCash(new BigNumber(1e22));
 
       // Place an order
       const direction = 0;
@@ -141,7 +141,7 @@ describe('3rd Party :: ZeroX :: ', () => {
       await john.sync();
 
       // Give John enough cash to pay for the 0x order.
-      await john.faucet(new BigNumber(1e22));
+      await john.faucetCash(new BigNumber(1e22));
 
       // Place an order
       const direction = 0;
@@ -245,7 +245,7 @@ describe('3rd Party :: ZeroX :: ', () => {
 
     test('Trade :: simulateTrade', async () => {
       // Give John enough cash to pay for the 0x order.
-      await john.faucet(new BigNumber(1e22));
+      await john.faucetCash(new BigNumber(1e22));
 
       const market1 = await john.createReasonableYesNoMarket();
 
@@ -347,7 +347,7 @@ describe('3rd Party :: ZeroX :: ', () => {
       await john.sync();
 
       // Give John enough cash to pay for the 0x order.
-      await john.faucet(new BigNumber(1e22));
+      await john.faucetCash(new BigNumber(1e22));
 
       // Place an order
       const direction = 0;

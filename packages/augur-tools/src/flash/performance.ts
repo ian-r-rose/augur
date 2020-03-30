@@ -43,7 +43,7 @@ export async function setupUser(account: Account, ethSource: ContractAPI, fundin
     await user.approveCentralAuthority();
   }
 
-  await user.faucet(new BigNumber(1e30));
+  await user.faucetCash(new BigNumber(1e30));
   await user.repFaucet(new BigNumber(1e30));
 
   return user

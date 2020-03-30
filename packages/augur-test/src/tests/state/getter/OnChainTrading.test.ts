@@ -80,7 +80,7 @@ describe('State API :: Trading :: ', () => {
     await john.fillOrder(orderId2, numShares.div(2), '42');
 
     // And the rest using another account
-    await mary.faucet(new BigNumber(1e18)); // faucet enough to cover fills
+    await mary.faucetCash(new BigNumber(1e18)); // faucet enough to cover fills
     await mary.fillOrder(orderId1, numShares.div(2), '43');
     await mary.fillOrder(orderId2, numShares.div(2), '43');
 

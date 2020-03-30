@@ -36,7 +36,7 @@ describe('3rd Party :: GSN :: ', () => {
     await john.approveCentralAuthority();
     const walletCash = new BigNumber(10).pow(24);
     const walletAddress = await john.getWalletAddress(john.account.address);
-    await john.faucet(walletCash);
+    await john.faucetCash(walletCash);
     await john.transferCash(walletAddress, walletCash);
 
     john.setUseWallet(true);
@@ -65,7 +65,7 @@ describe('3rd Party :: GSN :: ', () => {
     // Give John enough cash to pay for the 0x order.
 
     const cashAmount = new BigNumber(1e22);
-    await john.faucet(cashAmount);
+    await john.faucetCash(cashAmount);
 
     // Place an order
     const bid = new BigNumber(0);

@@ -47,7 +47,7 @@ describe('Warp Sync markets', () => {
       ipfs
     );
 
-    await john.faucet(new BigNumber(1000000000));
+    await john.faucetCash(new BigNumber(1000000000));
 
     await john.approveCentralAuthority();
     await mary.approveCentralAuthority();

@@ -127,7 +127,7 @@ export function addScripts(flash: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
       const target = args.target as string || user.account.address;
 
-      await user.faucet(atto);
+      await user.faucetCash(atto);
 
       // If we have a target we transfer from current account to target.
       // Cannot directly faucet to target because:
@@ -399,7 +399,7 @@ export function addScripts(flash: FlashSession) {
     async call(this: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
       await user.repFaucet(QUINTILLION.multipliedBy(1000000));
-      await user.faucetUpTo(QUINTILLION.multipliedBy(1000000));
+      await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
       await user.approve(QUINTILLION.multipliedBy(3000000));
 
       await user.initWarpSync(user.augur.contracts.universe.address);
@@ -413,7 +413,7 @@ export function addScripts(flash: FlashSession) {
     async call(this: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
       await user.repFaucet(QUINTILLION.multipliedBy(1000000));
-      await user.faucetUpTo(QUINTILLION.multipliedBy(1000000));
+      await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
       await user.approve(QUINTILLION.multipliedBy(3000000));
 
       await user.initWarpSync(user.augur.contracts.universe.address);
@@ -776,7 +776,7 @@ export function addScripts(flash: FlashSession) {
 
       if (!skipFaucetOrApproval) {
         console.log('create-market-order, faucet and approval');
-        await user.faucetUpTo(QUINTILLION.multipliedBy(10000));
+        await user.faucetCashUpTo(QUINTILLION.multipliedBy(10000));
         await user.approve(QUINTILLION.multipliedBy(100000));
       }
 
@@ -905,7 +905,7 @@ export function addScripts(flash: FlashSession) {
       if (!skipFaucet) {
         console.log('fauceting ...');
         const funds = new BigNumber(1e18).multipliedBy(1000000);
-        await user.faucetUpTo(funds, null);
+        await user.faucetCashUpTo(funds, null);
         await user.approve(funds);
       }
 
