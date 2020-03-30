@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import * as constants from 'modules/common/constants';
 import Styles from 'modules/common/labels.styles.less';
@@ -47,6 +47,7 @@ import { EventDetailsContent } from 'modules/create-market/constants';
 import { ExplainerBlock } from 'modules/create-market/components/common';
 import { hasTemplateTextInputs } from '@augurproject/artifacts';
 import { getDurationBetween } from 'utils/format-date';
+import { useTimer } from 'modules/common/progress';
 
 export interface MarketTypeProps {
   marketType: string;
@@ -148,6 +149,7 @@ export interface ValueLabelProps {
   keyId?: string;
   showEmptyDash?: boolean;
   useFull?: boolean;
+  usePercent?: boolean;
   alert?: boolean;
 }
 
@@ -229,17 +231,23 @@ interface TimeLabelProps {
 
 interface CountdownLabelProps {
   expiry: DateFormattedObject;
-  currentTimestamp: Number;
 }
 
-export const CountdownLabel = ({ expiry, currentTimestamp }: CountdownLabelProps) => {
+export const CountdownLabel = ({ expiry }: CountdownLabelProps) => {
   if (!expiry) return null;
-  const duration = getDurationBetween(expiry.timestamp, currentTimestamp);
-  const hours = duration.asHours();
-  if (hours > 1) return null;
+  const currentTime = useTimer();
+  const duration = getDurationBetween(expiry.timestamp, currentTime);
+  let durationValue = duration.asSeconds();
+  let unit = 'm';
+  if (durationValue > constants.SECONDS_IN_HOUR) return null;
+  if (durationValue > constants.SECONDS_IN_MINUTE) {
+    durationValue = Math.round(duration.asMinutes());
+  } else {
+    unit = 's';
+  }
   return (
     <div className={Styles.CountdownLabel}>
-      {Math.round(duration.asMinutes())}m
+      {durationValue}{unit}
     </div>
   );
 };
@@ -262,7 +270,7 @@ export const RedFlag = ({ market }: RedFlagProps) => market.mostLikelyInvalid ? 
       className={TooltipStyles.Tooltip}
       effect="solid"
       place="right"
-      type="light"
+      type={getTheme() === THEMES.TRADING ? "light" : null}
     >
       {PROBABLE_INVALID_MARKET}
     </ReactTooltip>
@@ -292,7 +300,7 @@ export const TemplateShield = ({ market }: TemplateShieldProps) => {
         className={TooltipStyles.Tooltip}
         effect="solid"
         place="right"
-        type="light"
+        type={getTheme() === THEMES.TRADING ? "light" : null}
       >
         {yellowShield
           ? "Templated market question, contains market creator text. This text should match to highlighted section's tooltip"
@@ -447,7 +455,7 @@ export const ValueLabel = (props: ValueLabelProps) => {
         data-for={`valueLabel-${fullPrecision}-${denominationLabel}-${props.keyId}`}
         data-iscapture="true"
       >
-        {props.useFull && props.value.full}
+        {props.usePercent ? props.value.percent : props.useFull && props.value.full}
         {!props.useFull && `${frontFacingLabel}${postfix}`}
         {!props.useFull && <span>{denominationLabel}</span>}
       </label>
@@ -521,7 +529,7 @@ export class TextLabel extends React.Component<TextLabelProps, TextLabelState> {
             className={TooltipStyles.Tooltip}
             effect="solid"
             place="top"
-            type="light"
+            type={getTheme() === THEMES.TRADING ? "light" : null}
             data-event="mouseover"
             data-event-off="blur scroll"
           >
@@ -644,7 +652,7 @@ export const InvalidLabel = ({
         )}
         effect="solid"
         place={tooltipPositioning || 'left'}
-        type="dark"
+        type={getTheme() === THEMES.TRADING ? "light" : null}
         data-event="mouseover"
         data-event-off="blur scroll"
       >
