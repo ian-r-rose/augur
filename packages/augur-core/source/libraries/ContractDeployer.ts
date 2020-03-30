@@ -77,11 +77,11 @@ Deploying to: ${env}
         return this.provider.getBlock('latest', false).then( (block) => block.number);
     }
 
-    async deploy(env: string, serial = true): Promise<ContractAddresses> {
+    async deploy(env: string): Promise<ContractAddresses> {
         const blockNumber = await this.getBlockNumber();
         this.augur = await this.uploadAugur();
         this.augurTrading = await this.uploadAugurTrading();
-        await this.uploadAllContracts(serial);
+        await this.uploadAllContracts();
 
         const externalAddresses = this.configuration.deploy.externalAddresses;
 
@@ -188,7 +188,7 @@ Deploying to: ${env}
             }
         }
 
-        await this.initializeAllContracts(serial);
+        await this.initializeAllContracts();
         await this.doTradingApprovals();
 
         if (!this.configuration.deploy.normalTime) {
@@ -439,10 +439,10 @@ Deploying to: ${env}
       return uniswapV2FactoryContract.address;
     }
 
-    private async uploadAllContracts(serial=true): Promise<void> {
+    private async uploadAllContracts(): Promise<void> {
         console.log('Uploading contracts...');
 
-        if (serial) { // needed for deploy to ganache
+        if (this.configuration.deploy.serial) { // needed for deploy to ganache
           for (const contract of this.contracts) {
             await this.upload(contract);
           }
@@ -513,7 +513,7 @@ Deploying to: ${env}
         return contractObj.address;
     }
 
-    private async initializeAllContracts(serial = true): Promise<void> {
+    private async initializeAllContracts(): Promise<void> {
         console.log('Initializing contracts...');
 
         const readiedPromises = [
@@ -539,7 +539,7 @@ Deploying to: ${env}
             })
         }
 
-        if (serial) {
+        if (this.configuration.deploy.serial) {
             for (const p of readiedPromises) {
                 await p();
             }

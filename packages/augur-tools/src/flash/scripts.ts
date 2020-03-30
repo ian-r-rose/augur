@@ -89,6 +89,7 @@ export function addScripts(flash: FlashSession) {
       const serial = !Boolean(args.parallel);
       if (this.noProvider()) return;
 
+      this.config = this.deriveConfig({deploy: { serial }});
       console.log('Deploying: ', this.config.deploy);
 
       const { addresses } = await deployContracts(
@@ -96,8 +97,7 @@ export function addScripts(flash: FlashSession) {
         this.provider,
         this.accounts[0],
         compilerOutput,
-        this.config,
-        serial
+        this.config
       );
       this.config.addresses = addresses;
     },
@@ -973,8 +973,8 @@ export function addScripts(flash: FlashSession) {
       const serial = !Boolean(args.parallel);
       const createMarkets = Boolean(args.createMarkets);
 
-      const config = this.deriveConfig({ deploy: { normalTime: false }});
-      await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config, serial)
+      const config = this.deriveConfig({ deploy: { serial, normalTime: false }});
+      await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config)
 
       if (createMarkets) {
         const user = await this.createUser(this.getAccount(), this.config);
@@ -1005,9 +1005,9 @@ export function addScripts(flash: FlashSession) {
       if (this.noProvider()) return;
       const serial = !Boolean(args.parallel);
       const createMarkets = Boolean(args.createMarkets);
-      const config = this.deriveConfig({ deploy: { normalTime: true }});
+      const config = this.deriveConfig({ deploy: { serial, normalTime: true }});
 
-      await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config, serial)
+      await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, config)
       if (createMarkets) {
         const user = await this.createUser(this.getAccount(), config);
         await createCannedMarkets(user);
@@ -1613,7 +1613,7 @@ export function addScripts(flash: FlashSession) {
 
         if (dev) {
           console.log('Deploying contracts');
-          await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, this.config, serial);
+          await deployContracts(this.network, this.provider, this.getAccount(), compilerOutput, this.config);
           const user = await this.createUser(this.getAccount(), this.config);
           await createCannedMarkets(user);
         }

@@ -22,14 +22,13 @@ export async function deployContracts(
   provider: EthersProvider,
   account: Account,
   compiledContracts: CompilerOutput,
-  config: SDKConfiguration,
-  serial = true,
+  config: SDKConfiguration
 ): Promise<UsefulContractObjects> {
   const signer = await makeSigner(account, provider);
   const dependencies = makeDependencies(account, provider, signer);
 
   const contractDeployer = new ContractDeployer(config, dependencies, provider.provider, signer, compiledContracts);
-  const addresses = await contractDeployer.deploy(env, serial);
+  const addresses = await contractDeployer.deploy(env);
 
   return { signer, dependencies, addresses };
 }

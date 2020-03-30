@@ -25,6 +25,7 @@ export interface SDKConfiguration {
     savePrivateKey?: boolean,
     privateKey: string,
     contractInputPath: string,
+    serial?: boolean,
     writeArtifacts?: boolean,
     externalAddresses?: ExternalAddresses,
   },
@@ -395,6 +396,7 @@ export function configFromEnvvars(): RecursivePartial<SDKConfiguration> {
   if (t(e.SAVE_PRIVATE_KEY)) config = d(config, { deploy: { savePrivateKey: bool(e.SAVE_PRIVATE_KEY) }});
   if (t(e.CONTRACT_INPUT_PATH)) config = d(config, { deploy: { contractInputPath: e.CONTRACT_INPUT_PATH }});
   if (t(e.WRITE_ARTIFACTS)) config = d(config, { deploy: { writeArtifacts: bool(e.WRITE_ARTIFACTS) }});
+  if (t(e.DEPLOY_SERIAL)) config = d(config, { deploy: { serial: bool(e.DEPLOY_SERIAL) }});
 
   if (t(e.GSN_ENABLED)) config = d(config, { gsn: { enabled: bool(e.GSN_ENABLED) }});
 
