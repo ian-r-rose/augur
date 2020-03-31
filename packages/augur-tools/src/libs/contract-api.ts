@@ -608,7 +608,7 @@ export class ContractAPI {
   async faucetCashUpTo(attoCash: BigNumber, extra = new BigNumber(0), targetAddress: string = null): Promise<void> {
     targetAddress = targetAddress || await this.augur.getAccount();
     const balance = await this.getCashBalance(targetAddress);
-    const leftToFaucet = balance.minus(attoCash);
+    const leftToFaucet = attoCash.minus(balance);
     if (leftToFaucet.gt(0)) {
       const totalToFaucet = leftToFaucet.plus(extra);
       this.faucetCash(totalToFaucet, targetAddress);
@@ -633,7 +633,7 @@ export class ContractAPI {
   async faucetRepUpTo(attoRep: BigNumber, extra = new BigNumber(0), useLegacy = false): Promise<void> {
     const address = await this.augur.getAccount();
     const balance = await this.getRepBalance(address);
-    const leftToFaucet = balance.minus(attoRep);
+    const leftToFaucet = attoRep.minus(balance);
     if (leftToFaucet.gt(0)) {
       const totalToFaucet = leftToFaucet.plus(extra);
       this.faucetRep(totalToFaucet, useLegacy);
