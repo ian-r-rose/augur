@@ -398,9 +398,10 @@ export function addScripts(flash: FlashSession) {
     name: 'create-canned-markets',
     async call(this: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
-      await user.faucetRep(QUINTILLION.multipliedBy(1000000));
-      await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
-      await user.approve();
+      const million = QUINTILLION.multipliedBy(1e7);
+      await user.faucetRepUpTo(million, million);
+      await user.faucetCashUpTo(million, million);
+      await user.approveIfNecessary();
 
       await user.initWarpSync(user.augur.contracts.universe.address);
       await user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
@@ -414,8 +415,8 @@ export function addScripts(flash: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
       const million = QUINTILLION.multipliedBy(1e7);
       await user.faucetRepUpTo(million, million);
-      await user.faucetCashUpTo(million, null, million);
-      await user.approve();
+      await user.faucetCashUpTo(million, million);
+      await user.approveIfNecessary();
 
       await user.initWarpSync(user.augur.contracts.universe.address);
       await user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
@@ -778,7 +779,7 @@ export function addScripts(flash: FlashSession) {
       if (!skipFaucetOrApproval) {
         console.log('create-market-order, faucet and approval');
         await user.faucetCashUpTo(QUINTILLION.multipliedBy(10000));
-        await user.approve();
+        await user.approveIfNecessary();
       }
 
       const type = orderType === 'bid' || orderType === 'buy' ? 0 : 1;
@@ -906,8 +907,8 @@ export function addScripts(flash: FlashSession) {
       if (!skipFaucet) {
         console.log('fauceting ...');
         const funds = new BigNumber(1e18).multipliedBy(1000000);
-        await user.faucetCashUpTo(funds, null);
-        await user.approve();
+        await user.faucetCashUpTo(funds);
+        await user.approveIfNecessary();
       }
 
       const markets = (await user.getMarkets()).markets;

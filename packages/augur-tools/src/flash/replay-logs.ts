@@ -36,7 +36,7 @@ export class LogReplayer {
 
   async User(account: Account): Promise<ContractAPI> {
     const user = await ContractAPI.userWrapper(account, this.provider, this.config);
-    await user.approve();
+    await user.approveIfNecessary();
     return user;
   }
 

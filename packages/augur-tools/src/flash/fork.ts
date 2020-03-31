@@ -7,7 +7,7 @@ import { ContractInterfaces } from '@augurproject/core';
 
 export async function fork(user: ContractAPI, market: ContractInterfaces.Market): Promise<boolean> {
   const MAX_DISPUTES = 20;
-  let SOME_REP = new BigNumber(1e18).times(10e2);
+  const SOME_REP = new BigNumber(1e18).times(10e2);
   const numOutcomes = await market.getNumberOfOutcomes_();
   const numTicks = await market.getNumTicks_();
 

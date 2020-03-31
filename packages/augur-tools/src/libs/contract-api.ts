@@ -96,6 +96,19 @@ export class ContractAPI {
     await this.augur.contracts.cash.approve(zeroXTrade, wei);
   }
 
+  async getCashAllowance(): Promise<BigNumber> {
+    const owner = this.account.address;
+    const authority = this.augur.config.addresses.Augur;
+    return this.augur.contracts.cash.allowance_(owner, authority);
+  }
+
+  async approveIfNecessary(wei=MAX_APPROVAL): Promise<void> {
+    const current = await this.getCashAllowance();
+    if (current.lt(wei)) {
+      await this.approve(wei);
+    }
+  }
+
   async createYesNoMarket(params: CreateYesNoMarketParams, faucet=true): Promise<ContractInterfaces.Market> {
     if (faucet) await this.marketFauceting();
     return this.augur.createYesNoMarket(params);
@@ -119,9 +132,9 @@ export class ContractAPI {
     const marketCreationFee = await this.augur.contracts.universe.getOrCacheValidityBond_();
     const repBond = await this.getRepBond();
     console.log('Cash Faucet for market creation');
-    await this.faucetCash(marketCreationFee);
+    await this.faucetCashUpTo(marketCreationFee);
     console.log('REP Faucet for market creation');
-    await this.faucetRep(repBond.plus(10**18));
+    await this.faucetRepUpTo(repBond.plus(1e18));
   }
 
   async createReasonableYesNoMarket(description = 'YesNo market description', faucet=true): Promise<ContractInterfaces.Market> {
@@ -188,12 +201,12 @@ export class ContractAPI {
 
     if (type.isEqualTo(0)) { // BID
       const cost = numShares.multipliedBy(price);
-      await this.faucetCash(cost);
+      await this.faucetCashUpTo(cost);
     } else if (type.isEqualTo(1)) { // ASK
       const m = await this.getMarketContract(market);
       const numTicks = await m.getNumTicks_();
       const cost = numTicks.plus(price.multipliedBy(-1)).multipliedBy(numShares);
-      await this.faucetCash(cost);
+      await this.faucetCashUpTo(cost);
     } else {
       throw Error(`Invalid order type ${type.toString()}`);
     }
@@ -233,7 +246,7 @@ export class ContractAPI {
 
   async fillOrder(orderId: string, numShares: BigNumber, tradeGroupId: string, cost?: BigNumber) {
     if (cost) {
-      await this.faucetCash(cost);
+      await this.faucetCashUpTo(cost);
     }
     await this.augur.contracts.fillOrder.publicFillOrder(orderId, numShares, formatBytes32String(tradeGroupId), formatBytes32String(''));
   }
@@ -250,7 +263,7 @@ export class ContractAPI {
   async placeZeroXTrade(params: ZeroXPlaceTradeDisplayParams): Promise<void> {
     const price = params.direction === 0 ? params.displayPrice : params.numTicks.minus(params.displayPrice);
     const cost = params.displayAmount.multipliedBy(price).multipliedBy(10**18);
-    await this.faucetCash(cost);
+    await this.faucetCashUpTo(cost);
     await this.augur.zeroX.placeTrade(params);
   }
 
@@ -275,7 +288,7 @@ export class ContractAPI {
 
   async takeBestOrder(marketAddress: string, type: BigNumber, numShares: BigNumber, price: BigNumber, outcome: BigNumber, tradeGroupID: string): Promise<void> {
     const cost = numShares.multipliedBy(price);
-    await this.faucetCash(cost);
+    await this.faucetCashUpTo(cost);
     const bestPriceAmount = await this.augur.contracts.trade.publicFillBestOrder_(type, marketAddress, outcome, numShares, price, tradeGroupID, new BigNumber(3), formatBytes32String(''));
     if (bestPriceAmount === new BigNumber(0)) {
       throw new Error('Could not take best Order');
@@ -295,7 +308,7 @@ export class ContractAPI {
   async placeNativeTrade(params: PlaceTradeDisplayParams): Promise<void> {
     const price = params.direction === 0 ? params.displayPrice : params.numTicks.minus(params.displayPrice);
     const cost = params.displayAmount.multipliedBy(price).multipliedBy(10**18);
-    await this.faucetCash(cost);
+    await this.faucetCashUpTo(cost);
     await this.augur.trade.placeTrade(params);
   }
 
@@ -405,7 +418,7 @@ export class ContractAPI {
   async buyCompleteSets(market: ContractInterfaces.Market, amount: BigNumber): Promise<void> {
     const numTicks = await market.getNumTicks_();
     const cashValue = amount.multipliedBy(numTicks);
-    await this.faucetCash(cashValue);
+    await this.faucetCashUpTo(cashValue);
     await this.augur.contracts.shareToken.publicBuyCompleteSets(market.address, amount);
   }
 
@@ -592,7 +605,7 @@ export class ContractAPI {
 
   // Faucets cash if the target address (or current user) has less than `attoCash`.
   // When fauceting, adds `extra` cash as a buffer.
-  async faucetCashUpTo(attoCash: BigNumber, targetAddress: string = null, extra = new BigNumber(0)): Promise<void> {
+  async faucetCashUpTo(attoCash: BigNumber, extra = new BigNumber(0), targetAddress: string = null): Promise<void> {
     targetAddress = targetAddress || await this.augur.getAccount();
     const balance = await this.getCashBalance(targetAddress);
     const leftToFaucet = balance.minus(attoCash);
@@ -632,7 +645,7 @@ export class ContractAPI {
   }
 
   async addEthExchangeLiquidity(attoCash: BigNumber, attoEth: BigNumber): Promise<void> {
-    await this.faucetCash(attoCash);
+    await this.faucetCashUpTo(attoCash);
     await this.augur.contracts.cash.transfer(this.augur.contracts.ethExchange.address, attoCash);
     await this.augur.contracts.weth.deposit({attachedEth: attoEth});
     await this.augur.contracts.weth.transfer(this.augur.contracts.ethExchange.address, attoEth);
@@ -746,7 +759,7 @@ export class ContractAPI {
 
   async fundSafe(safe: string, minimum=new BigNumber(1e21)) {
     if ((await this.getCashBalance(safe)).lt(minimum)) {
-      await this.faucetCash(minimum, safe);
+      await this.faucetCashUpTo(minimum, new BigNumber(0), safe);
     }
 
     return safe;
