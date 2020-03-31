@@ -217,7 +217,7 @@ export function addScripts(flash: FlashSession) {
       const atto = new BigNumber(amount).times(_1_ETH);
       const target = args.target as string
 
-      await user.repFaucet(atto, useLegacyRep);
+      await user.faucetRep(atto, useLegacyRep);
 
       // if we have a target we transfer from current account to target.
       if (target) {
@@ -398,9 +398,9 @@ export function addScripts(flash: FlashSession) {
     name: 'create-canned-markets',
     async call(this: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
-      await user.repFaucet(QUINTILLION.multipliedBy(1000000));
+      await user.faucetRep(QUINTILLION.multipliedBy(1000000));
       await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
-      await user.approve(QUINTILLION.multipliedBy(3000000));
+      await user.approve();
 
       await user.initWarpSync(user.augur.contracts.universe.address);
       await user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
@@ -412,9 +412,10 @@ export function addScripts(flash: FlashSession) {
     name: 'create-canned-markets-with-orders',
     async call(this: FlashSession) {
       const user = await this.createUser(this.getAccount(), this.config);
-      await user.repFaucet(QUINTILLION.multipliedBy(1000000));
-      await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
-      await user.approve(QUINTILLION.multipliedBy(3000000));
+      const million = QUINTILLION.multipliedBy(1e7);
+      await user.faucetRepUpTo(million, million);
+      await user.faucetCashUpTo(million, null, million);
+      await user.approve();
 
       await user.initWarpSync(user.augur.contracts.universe.address);
       await user.addEthExchangeLiquidity(new BigNumber(4e18), new BigNumber(600e18));
@@ -777,7 +778,7 @@ export function addScripts(flash: FlashSession) {
       if (!skipFaucetOrApproval) {
         console.log('create-market-order, faucet and approval');
         await user.faucetCashUpTo(QUINTILLION.multipliedBy(10000));
-        await user.approve(QUINTILLION.multipliedBy(100000));
+        await user.approve();
       }
 
       const type = orderType === 'bid' || orderType === 'buy' ? 0 : 1;
@@ -906,7 +907,7 @@ export function addScripts(flash: FlashSession) {
         console.log('fauceting ...');
         const funds = new BigNumber(1e18).multipliedBy(1000000);
         await user.faucetCashUpTo(funds, null);
-        await user.approve(funds);
+        await user.approve();
       }
 
       const markets = (await user.getMarkets()).markets;

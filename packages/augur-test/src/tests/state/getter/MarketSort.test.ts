@@ -50,7 +50,7 @@ describe('State API :: Market Sorts', () => {
 
       johnConnector.initialize(john.augur, john.db);
 
-      await john.approveCentralAuthority();
+      await john.approve();
     });
 
     test(':horizontal/vertical liquidity', async () => {

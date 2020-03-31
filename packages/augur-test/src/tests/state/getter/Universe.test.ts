@@ -46,9 +46,9 @@ describe('State API :: Universe :: ', () => {
       baseProvider,
       config
     );
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
-    await bob.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
+    await bob.approve();
   });
 
   beforeEach(async () => {
@@ -86,11 +86,11 @@ describe('State API :: Universe :: ', () => {
     const invalidNumerators = getPayoutNumerators(marketInfo, 0);
     const noNumerators = getPayoutNumerators(marketInfo, 1);
 
-    await john.repFaucet(new BigNumber(1e21));
+    await john.faucetRep(new BigNumber(1e21));
     await john.augur.contracts.universe.createChildUniverse(invalidNumerators);
     await repToken.migrateOutByPayout(invalidNumerators, new BigNumber(1e21));
 
-    await john.repFaucet(new BigNumber(1e21));
+    await john.faucetRep(new BigNumber(1e21));
     await john.augur.contracts.universe.createChildUniverse(noNumerators);
     await repToken.migrateOutByPayout(noNumerators, new BigNumber(1e21));
 
@@ -147,11 +147,11 @@ describe('State API :: Universe :: ', () => {
     const invalidNumerators = getPayoutNumerators(marketInfo, 0);
     const fooNumerators = getPayoutNumerators(marketInfo, 1);
 
-    await john.repFaucet(new BigNumber(1e21));
+    await john.faucetRep(new BigNumber(1e21));
     await john.augur.contracts.universe.createChildUniverse(invalidNumerators);
     await repToken.migrateOutByPayout(invalidNumerators, new BigNumber(1e21));
 
-    await john.repFaucet(new BigNumber(1e21));
+    await john.faucetRep(new BigNumber(1e21));
     await john.augur.contracts.universe.createChildUniverse(fooNumerators);
     await repToken.migrateOutByPayout(fooNumerators, new BigNumber(1e21));
 
@@ -208,11 +208,11 @@ describe('State API :: Universe :: ', () => {
       john.augur.config.networkId
     );
 
-    await john.repFaucet(new BigNumber(1e21));
+    await john.faucetRep(new BigNumber(1e21));
 
     await john.augur.contracts.universe.createChildUniverse(invalidNumerators);
     await repToken.migrateOutByPayout(invalidNumerators, new BigNumber(1e21));
-    await john.repFaucet(new BigNumber(1e21));
+    await john.faucetRep(new BigNumber(1e21));
     await john.augur.contracts.universe.createChildUniverse(fooNumerators);
     await repToken.migrateOutByPayout(fooNumerators, new BigNumber(1e21));
     await john.sync();
@@ -249,9 +249,9 @@ describe('State API :: Universe :: ', () => {
     const bobRep = new BigNumber(0);
     let totalRep = await john.augur.contracts.reputationToken.totalSupply_();
 
-    await john.repFaucet(new BigNumber(91));
+    await john.faucetRep(new BigNumber(91));
     johnRep = johnRep.plus(91);
-    await mary.repFaucet(new BigNumber(19));
+    await mary.faucetRep(new BigNumber(19));
     maryRep = maryRep.plus(19);
     totalRep = totalRep.plus(91).plus(19);
 

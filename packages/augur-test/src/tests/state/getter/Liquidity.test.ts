@@ -50,7 +50,7 @@ describe('State API :: Liquidity', () => {
 
       johnConnector.initialize(john.augur, john.db);
 
-      await john.approveCentralAuthority();
+      await john.approve();
     });
     test(': Liquidity Ranking', async () => {
       const liquidityRankingParams = {

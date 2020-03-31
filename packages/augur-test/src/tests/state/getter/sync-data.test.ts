@@ -17,7 +17,7 @@ beforeAll(async () => {
     provider,
     provider.getConfig()
   );
-  await john.approveCentralAuthority();
+  await john.approve();
 });
 
 // NOTE: Full-text searching is tested more in SyncableDB.test.ts

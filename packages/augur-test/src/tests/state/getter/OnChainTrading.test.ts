@@ -34,8 +34,8 @@ describe('State API :: Trading :: ', () => {
   });
 
   test(':getTradingHistory', async () => {
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
 
     // Create a market
     const market1 = await john.createReasonableMarket([
@@ -140,8 +140,8 @@ describe('State API :: Trading :: ', () => {
   });
 
   test('State API :: Trading :: getOpenOnChainOrders', async () => {
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
 
     // Create a market
     const market = await john.createReasonableMarket([

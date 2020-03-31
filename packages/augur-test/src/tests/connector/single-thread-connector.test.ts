@@ -30,7 +30,7 @@ beforeAll(async () => {
 
   john = await TestContractAPI.userWrapper(ACCOUNTS[0], provider, provider.getConfig());
 
-  await john.approveCentralAuthority();
+  await john.approve();
 
   connector = new SingleThreadConnector();
   console.log('Connector connecting');

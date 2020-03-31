@@ -50,7 +50,7 @@ describe('Augur API :: ZeroX :: ', () => {
         johnBrowserMesh
       );
       johnConnector.initialize(john.augur, john.db);
-      await john.approveCentralAuthority();
+      await john.approve();
 
       const maryConnector = new Connectors.DirectConnector();
       const maryBrowserMesh = new MockBrowserMesh(meshClient);
@@ -63,7 +63,7 @@ describe('Augur API :: ZeroX :: ', () => {
         maryBrowserMesh
       );
       maryConnector.initialize(mary.augur, mary.db);
-      await mary.approveCentralAuthority();
+      await mary.approve();
 
       maryBrowserMesh.addOtherBrowserMeshToMockNetwork(johnBrowserMesh);
       johnBrowserMesh.addOtherBrowserMeshToMockNetwork(maryBrowserMesh);

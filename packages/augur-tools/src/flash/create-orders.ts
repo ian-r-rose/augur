@@ -11,7 +11,7 @@ export async function createYesNoZeroXOrders(
 ) {
   if (!skipFaucetApproval) {
     await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
-    await user.approve(QUINTILLION.multipliedBy(1000000));
+    await user.approve();
   }
   const yesNoMarket = cannedMarkets.find(c => c.marketType === 'yesNo');
   const orderBook = yesNoMarket.orderBook;
@@ -77,7 +77,7 @@ export async function createCatZeroXOrders(
 ) {
   if (!skipFaucetApproval) {
     await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
-    await user.approve(QUINTILLION.multipliedBy(1000000));
+    await user.approve();
   }
 
   const orderBook = {
@@ -178,7 +178,7 @@ export async function createScalarZeroXOrders(
 ) {
   if (!skipFaucetApproval) {
     await user.faucetCashUpTo(QUINTILLION.multipliedBy(1000000));
-    await user.approve(QUINTILLION.multipliedBy(1000000));
+    await user.approve();
   }
 
   const timestamp = await user.getTimestamp();

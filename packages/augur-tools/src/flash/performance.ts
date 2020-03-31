@@ -40,11 +40,11 @@ export async function setupUser(account: Account, ethSource: ContractAPI, fundin
     user.setUseWallet(true);
     user.setUseRelay(true);
   } else {
-    await user.approveCentralAuthority();
+    await user.approve();
   }
 
   await user.faucetCash(new BigNumber(1e30));
-  await user.repFaucet(new BigNumber(1e30));
+  await user.faucetRep(new BigNumber(1e30));
 
   return user
 }

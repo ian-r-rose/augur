@@ -30,7 +30,7 @@ export async function orderFirehose(
     console.log('order-firehose, faucet and approval');
     await Promise.all(users.map(async (user) => {
       await user.faucetCashUpTo(QUINTILLION.multipliedBy(10000));
-      await user.approve(QUINTILLION.multipliedBy(100000));
+      await user.approve();
     }));
   }
   const config = createTightOrderBookConfig(orderSize);

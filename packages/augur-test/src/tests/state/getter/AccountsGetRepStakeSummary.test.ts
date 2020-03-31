@@ -24,8 +24,8 @@ describe('State API :: Accounts :: ', () => {
       config
     );
 
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
   });
 
   test(':getAccountTransactionHistory', async () => {
@@ -83,8 +83,8 @@ describe('State API :: Accounts :: ', () => {
     );
     await john.buyParticipationTokens(disputeWindow.address, new BigNumber(1));
 
-    await john.repFaucet(new BigNumber(1e25));
-    await mary.repFaucet(new BigNumber(1e25));
+    await john.faucetRep(new BigNumber(1e25));
+    await mary.faucetRep(new BigNumber(1e25));
 
     // Dispute 2 times
     for (let disputeRound = 1; disputeRound <= 3; disputeRound++) {

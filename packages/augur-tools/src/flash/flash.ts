@@ -132,7 +132,7 @@ export class FlashSession {
       user.setUseWallet(true);
       user.setUseRelay(true);
     } else if (!config.flash?.skipApproval) {
-      await user.approveCentralAuthority();
+      await user.approve();
     }
 
     if (config.flash?.syncSDK) {

@@ -33,7 +33,7 @@ describe('3rd Party :: GSN :: ', () => {
     );
 
     connectorJohn.initialize(john.augur, john.db);
-    await john.approveCentralAuthority();
+    await john.approve();
     const walletCash = new BigNumber(10).pow(24);
     const walletAddress = await john.getWalletAddress(john.account.address);
     await john.faucetCash(walletCash);
@@ -58,7 +58,7 @@ describe('3rd Party :: GSN :: ', () => {
     // Faucet some REP and confirm the wallet recieves it
     const repAmount = new BigNumber(1e10);
     const repBalance = await john.getRepBalance(walletAddress);
-    await john.repFaucet(repAmount);
+    await john.faucetRep(repAmount);
     const newRepBalance = await john.getRepBalance(walletAddress);
     await expect(newRepBalance.toFixed()).toBe(repBalance.plus(repAmount).toFixed());
 

@@ -14,7 +14,7 @@ beforeAll(async () => {
     provider,
     provider.getConfig()
   );
-  await john.approveCentralAuthority();
+  await john.approve();
 });
 
 test('Hot Loading :: Get Market Data', async () => {

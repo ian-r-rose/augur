@@ -59,7 +59,7 @@ describe('3rd Party :: ZeroX :: ', () => {
       );
       johnConnector.initialize(john.augur, john.db);
 
-      await john.approveCentralAuthority();
+      await john.approve();
       await john.getOrCreateWallet();
       john.setUseWallet(true);
       john.setUseRelay(true);
@@ -75,7 +75,7 @@ describe('3rd Party :: ZeroX :: ', () => {
       );
       maryConnector.initialize(mary.augur, await mary.db);
 
-      await mary.approveCentralAuthority();
+      await mary.approve();
       await mary
         .getOrCreateWallet()
         .catch(e => console.error(`Safe funding failed: ${JSON.stringify(e)}`));
@@ -335,7 +335,7 @@ describe('3rd Party :: ZeroX :: ', () => {
         undefined
       );
       connectorJohn.initialize(john.augur, john.db);
-      await john.approveCentralAuthority();
+      await john.approve();
     }, 120000);
 
     test('State API :: ZeroX :: getOrders', async () => {

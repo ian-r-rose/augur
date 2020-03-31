@@ -46,9 +46,9 @@ export async function _beforeAll(): Promise<AllState> {
     baseProvider,
     config
   );
-  await john.approveCentralAuthority();
-  await mary.approveCentralAuthority();
-  await bob.approveCentralAuthority();
+  await john.approve();
+  await mary.approve();
+  await bob.approve();
 
   let endTime = (await john.getTimestamp()).plus(SECONDS_IN_A_DAY);
   const lowFeePerCashInAttoCash = new BigNumber(10).pow(18).div(20); // 5% creator fee

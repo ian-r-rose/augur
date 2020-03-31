@@ -18,7 +18,7 @@ beforeAll(async () => {
     provider,
     provider.getConfig()
   );
-  await john.approveCentralAuthority();
+  await john.approve();
 });
 
 test('TransactionStatus :: transaction status updates', async () => {
@@ -115,7 +115,7 @@ test("TransactionStatus :: transaction status events failure", async (done) => {
   });
 
   john = await TestContractAPI.userWrapper(ACCOUNTS[0], provider, seed.addresses);
-  await john.approveCentralAuthority();
+  await john.approve();
 
   john.augur.on(TXEventName.Failure, failure);
   john.augur.on(TXEventName.Pending, pending);

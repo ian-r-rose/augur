@@ -28,8 +28,8 @@ describe('State API :: Accounts :: ', () => {
       config
     );
 
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
   });
 
   test(':getAccountTransactionHistoryTest', async () => {
@@ -421,8 +421,8 @@ describe('State API :: Accounts :: ', () => {
       amountParticipationTokens
     );
 
-    await john.repFaucet(new BigNumber(1e25));
-    await mary.repFaucet(new BigNumber(1e25));
+    await john.faucetRep(new BigNumber(1e25));
+    await mary.faucetRep(new BigNumber(1e25));
 
     // Dispute 2 times
     for (let disputeRound = 1; disputeRound <= 3; disputeRound++) {
@@ -669,7 +669,7 @@ describe('State API :: Accounts :: ', () => {
       new BigNumber(100),
     ];
 
-    await john.repFaucet(new BigNumber(1e25));
+    await john.faucetRep(new BigNumber(1e25));
     await john.doInitialReport(johnYesNoMarket, yesPayoutSet);
 
     // Now do multiple dispute contributions

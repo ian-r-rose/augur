@@ -30,7 +30,7 @@ describe('Checkpoint', () => {
     );
 
     await john.faucetCash(new BigNumber(1000000000));
-    await john.approveCentralAuthority();
+    await john.approve();
 
     const amountToTransfer = new BigNumber(1000);
 

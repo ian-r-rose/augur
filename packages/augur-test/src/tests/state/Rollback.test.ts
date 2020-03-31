@@ -117,9 +117,9 @@ test('rollback derived database', async () => {
     set: jest.fn()
   });
 
-  await john.approveCentralAuthority();
+  await john.approve();
 
-  await john.repFaucet(new BigNumber(1e20));
+  await john.faucetRep(new BigNumber(1e20));
 
   await john.sync();
 

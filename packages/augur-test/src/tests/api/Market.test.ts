@@ -21,8 +21,8 @@ beforeAll(async () => {
     provider,
     config
   );
-  await john.approveCentralAuthority();
-  await mary.approveCentralAuthority();
+  await john.approve();
+  await mary.approve();
 });
 
 test('market :: createYesNoMarket', async () => {

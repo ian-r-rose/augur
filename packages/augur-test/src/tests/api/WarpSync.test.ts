@@ -16,7 +16,7 @@ describe('WarpSync', () => {
       provider,
       provider.getConfig()
     );
-    await john.approveCentralAuthority();
+    await john.approve();
     await john.initializeUniverseForWarpSync();
   });
 

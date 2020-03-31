@@ -14,6 +14,7 @@ import { formatBytes32String } from 'ethers/utils';
 import { buildConfig } from '@augurproject/artifacts';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const MAX_APPROVAL = new BigNumber(2).pow(256).minus(1);
 
 export class TestFixture {
     // FIXME: extract out the bits of contract deployer that we need access to, like the contracts/abis, so we can have a more targeted dependency
@@ -55,16 +56,16 @@ export class TestFixture {
         return new TestFixture(dependencies, provider, contractDeployer, signer.address);
     };
 
-    async approveCentralAuthority(): Promise<void> {
+    async approve(): Promise<void> {
         const authority = this.contractDeployer.getContractAddress('Augur');
-        await this.cash.approve(authority, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+        await this.cash.approve(authority, MAX_APPROVAL);
 
         const fillOrder = this.contractDeployer.getContractAddress('FillOrder');
-        await this.cash.approve(fillOrder, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+        await this.cash.approve(fillOrder, MAX_APPROVAL);
         await this.shareToken.setApprovalForAll(fillOrder, true);
 
         const createOrder = this.contractDeployer.getContractAddress('CreateOrder');
-        await this.cash.approve(createOrder, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+        await this.cash.approve(createOrder, MAX_APPROVAL);
         await this.shareToken.setApprovalForAll(createOrder, true);
     }
 
@@ -72,7 +73,7 @@ export class TestFixture {
       await this.cashFaucet.faucet(attoCash);
     }
 
-    async repFaucet(attoRep: BigNumber): Promise<void> {
+    async faucetRep(attoRep: BigNumber): Promise<void> {
       const reputationToken = await this.getReputationToken();
       await reputationToken.faucet(attoRep);
     }

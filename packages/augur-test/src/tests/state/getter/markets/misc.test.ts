@@ -80,7 +80,7 @@ describe('State API :: Markets :: ', () => {
       new BigNumber(100),
       new BigNumber(0),
     ];
-    await bob.repFaucet(new BigNumber(1));
+    await bob.faucetRep(new BigNumber(1));
     await bob.contribute(categoricalMarket1, payoutSet, new BigNumber(1));
 
     // Trade on a market with Bob

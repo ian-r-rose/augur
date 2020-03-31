@@ -50,9 +50,9 @@ describe('State API :: Markets :: ', () => {
       config
     );
 
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
-    await bob.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
+    await bob.approve();
 
     const endTime = (await john.getTimestamp()).plus(SECONDS_IN_A_DAY);
     const feePerCashInAttoCash = new BigNumber(10).pow(18).div(20); // 5% creator fee
@@ -102,7 +102,7 @@ describe('State API :: Markets :: ', () => {
 
     // Submit intial report with additional stake
     const additionalRep = new BigNumber(100).multipliedBy(10 ** 18).toFixed();
-    await john.repFaucet(new BigNumber(1e27));
+    await john.faucetRep(new BigNumber(1e27));
     await john.doInitialReport(yesNoMarket, noPayoutSet, '', additionalRep);
 
     await john.sync();

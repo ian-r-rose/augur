@@ -13,7 +13,7 @@ export async function dispute(user: ContractAPI, market: MarketInfo, slow: boole
 
   const marketContract = user.augur.contracts.marketFromAddress(market.id);
 
-  await user.repFaucet(SOME_REP);
+  await user.faucetRep(SOME_REP);
 
   // Get past the market time, into when we can accept the initial report.
   await user.setTimestamp(new BigNumber(market.endTime + 1));

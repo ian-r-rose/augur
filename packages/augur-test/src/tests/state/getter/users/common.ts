@@ -92,8 +92,8 @@ export async function _beforeEach(allState: AllState): Promise<SomeState> {
     provider,
     config
   );
-  await john.approveCentralAuthority();
-  await mary.approveCentralAuthority();
+  await john.approve();
+  await mary.approve();
 
   return {
     john,

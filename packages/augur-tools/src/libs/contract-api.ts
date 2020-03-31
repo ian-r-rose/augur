@@ -27,7 +27,7 @@ import { SDKConfiguration } from '@augurproject/artifacts';
 import moment from 'moment';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-const ETERNAL_APPROVAL_VALUE = new BigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); // 2^256 - 1
+const MAX_APPROVAL = new BigNumber(2).pow(256).minus(1);
 
 export class ContractAPI {
   static async userWrapper(
@@ -80,19 +80,20 @@ export class ContractAPI {
     return await this.augur.sendETH(to, amount);
   }
 
-  async approveCentralAuthority(): Promise<void> {
+  async approve(wei=MAX_APPROVAL): Promise<void> {
     const authority = this.augur.config.addresses.Augur;
-    await this.augur.contracts.cash.approve(authority, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+    await this.augur.contracts.cash.approve(authority, wei);
 
     const fillOrder = this.augur.config.addresses.FillOrder;
-    await this.augur.contracts.cash.approve(fillOrder, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+    await this.augur.contracts.cash.approve(fillOrder, wei);
     await this.augur.contracts.shareToken.setApprovalForAll(fillOrder, true);
 
     const createOrder = this.augur.config.addresses.CreateOrder;
-    await this.augur.contracts.cash.approve(createOrder, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+    await this.augur.contracts.cash.approve(createOrder,wei);
     await this.augur.contracts.shareToken.setApprovalForAll(createOrder, true);
 
-    await this.augur.contracts.cash.approve(this.augur.config.addresses.ZeroXTrade, new BigNumber(2).pow(256).minus(new BigNumber(1)));
+    const zeroXTrade = this.augur.config.addresses.ZeroXTrade;
+    await this.augur.contracts.cash.approve(zeroXTrade, wei);
   }
 
   async createYesNoMarket(params: CreateYesNoMarketParams, faucet=true): Promise<ContractInterfaces.Market> {
@@ -120,7 +121,7 @@ export class ContractAPI {
     console.log('Cash Faucet for market creation');
     await this.faucetCash(marketCreationFee);
     console.log('REP Faucet for market creation');
-    await this.repFaucet(repBond.plus(10**18));
+    await this.faucetRep(repBond.plus(10**18));
   }
 
   async createReasonableYesNoMarket(description = 'YesNo market description', faucet=true): Promise<ContractInterfaces.Market> {
@@ -601,7 +602,7 @@ export class ContractAPI {
     }
   }
 
-  async repFaucet(attoRep: BigNumber, useLegacy = false): Promise<void> {
+  async faucetRep(attoRep: BigNumber, useLegacy = false): Promise<void> {
     const reputationToken = this.augur.contracts.getReputationToken();
     if (useLegacy) {
       await this.augur.contracts.legacyReputationToken.faucet(attoRep);
@@ -611,6 +612,18 @@ export class ContractAPI {
       } else {
         throw Error('Cannot faucet REP with non-test version of REP contract.');
       }
+    }
+  }
+
+  // Faucets rep if the target address (or current user) has less than `attoRep`.
+  // When fauceting, adds `extra` rep as a buffer.
+  async faucetRepUpTo(attoRep: BigNumber, extra = new BigNumber(0), useLegacy = false): Promise<void> {
+    const address = await this.augur.getAccount();
+    const balance = await this.getRepBalance(address);
+    const leftToFaucet = balance.minus(attoRep);
+    if (leftToFaucet.gt(0)) {
+      const totalToFaucet = leftToFaucet.plus(extra);
+      this.faucetRep(totalToFaucet, useLegacy);
     }
   }
 
@@ -638,16 +651,6 @@ export class ContractAPI {
     }
   }
 
-  async approve(wei: BigNumber): Promise<void> {
-    await this.augur.contracts.cash.approve(this.augur.config.addresses.Augur, wei);
-
-    await this.augur.contracts.cash.approve(this.augur.config.addresses.FillOrder, wei);
-    await this.augur.contracts.shareToken.setApprovalForAll(this.augur.config.addresses.FillOrder, true);
-
-    await this.augur.contracts.cash.approve(this.augur.config.addresses.CreateOrder, wei);
-    await this.augur.contracts.shareToken.setApprovalForAll(this.augur.config.addresses.CreateOrder, true);
-  }
-
   getLegacyRepBalance(owner: string): Promise<BigNumber> {
     return this.augur.contracts.legacyReputationToken.balanceOf_(owner);
   }
@@ -658,10 +661,6 @@ export class ContractAPI {
 
   async transferLegacyRep(to: string, amount: BigNumber): Promise<void> {
     await this.augur.contracts.legacyReputationToken.transfer(to, amount);
-  }
-
-  async approveLegacyRep(spender: string, amount: BigNumber): Promise<void> {
-    await this.augur.contracts.legacyReputationToken.approve(spender, amount);
   }
 
   async getChildUniverseReputationToken(parentPayoutDistributionHash: string) {
@@ -701,22 +700,6 @@ export class ContractAPI {
 
   setUseRelay(useRelay: boolean): void {
     this.augur.setUseRelay(useRelay);
-  }
-
-  async approveAugurEternalApprovalValue(owner: string) {
-    const augur = this.augur.config.addresses.Augur;
-    const allowance = new BigNumber(await this.augur.contracts.cash.allowance_(owner, augur));
-
-    if (!allowance.eq(ETERNAL_APPROVAL_VALUE)) {
-      const fillOrder = this.augur.config.addresses.FillOrder;
-      const createOrder = this.augur.config.addresses.CreateOrder;
-      await this.augur.contracts.cash.approve(augur, ETERNAL_APPROVAL_VALUE, { sender: this.account.address });
-      await this.augur.contracts.cash.approve(fillOrder, ETERNAL_APPROVAL_VALUE, { sender: this.account.address });
-      await this.augur.contracts.cash.approve(createOrder, ETERNAL_APPROVAL_VALUE, { sender: this.account.address });
-
-      await this.augur.contracts.shareToken.setApprovalForAll(fillOrder, true, { sender: this.account.address });
-      await this.augur.contracts.shareToken.setApprovalForAll(createOrder, true, { sender: this.account.address });
-    }
   }
 
   async getWalletAddress(account: string): Promise<string> {

@@ -31,8 +31,8 @@ describe('State API :: get-platform-activity-stats :: ', () => {
       config
     );
 
-    await john.approveCentralAuthority();
-    await mary.approveCentralAuthority();
+    await john.approve();
+    await mary.approve();
   });
 
   test('getPlatformActivityStats', async () => {
@@ -54,8 +54,8 @@ describe('State API :: get-platform-activity-stats :: ', () => {
 
     await john.faucetCash(new BigNumber(1e18));
     await mary.faucetCash(new BigNumber(1e18));
-    mary.repFaucet(new BigNumber(1e18).multipliedBy(1000000));
-    john.repFaucet(new BigNumber(1e18).multipliedBy(1000000));
+    mary.faucetRep(new BigNumber(1e18).multipliedBy(1000000));
+    john.faucetRep(new BigNumber(1e18).multipliedBy(1000000));
 
     // Trade
     await placeOrders(john, yesNoMarket, numShares, price);
